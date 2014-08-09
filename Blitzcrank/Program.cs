@@ -139,10 +139,16 @@ namespace Blitzcrank
             if (Player.IsDead) return;
             Orbwalker.SetAttacks(true);
             Orbwalker.SetMovement(true);
+            
+            var useRKS = Config.Item("KillstealR").GetValue<bool>() && R.IsReady();
 
             if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
             {
                 Combo();
+            }
+            if (useRKS)
+            {
+                Killsteal();
             }
         }
 
@@ -159,16 +165,14 @@ namespace Blitzcrank
         
         private static void Killsteal()
         {
-            var useRKS = Config.Item("KillstealR").GetValue<bool>() && R.IsReady();
-            if (useRKS)
-            {
+            
                 foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Range)))
                 {
                     if (R.IsReady() && hero.Distance(ObjectManager.Player) <= R.Range &&
                         DamageLib.getDmg(hero, DamageLib.SpellType.R) >= hero.Health)
                         R.Cast();
                 }
-            }
+            
         }
     }
 }
