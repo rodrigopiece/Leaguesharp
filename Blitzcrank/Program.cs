@@ -47,7 +47,7 @@ namespace Blitzcrank
             E = new Spell(SpellSlot.E, Player.AttackRange+50);
             R = new Spell(SpellSlot.R, 600);
 
-            Q.SetSkillshot(0.25f, 70f, 1800f, false, Prediction.SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 70f, 1900f, true, Prediction.SkillshotType.SkillshotLine);
 
             SpellList.Add(Q);
             SpellList.Add(E);
@@ -80,6 +80,7 @@ namespace Blitzcrank
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("InterruptSpells", "Interrupt spells with R").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("KillstealR", "Killsteal with R").SetValue(false));
 
             //Drawings menu:
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -153,6 +154,20 @@ namespace Blitzcrank
                 var menuItem = Config.Item(spell.Slot + "Range").GetValue<Circle>();
                 if (menuItem.Active)
                     Utility.DrawCircle(Player.Position, spell.Range, menuItem.Color);
+            }
+        }
+        
+        private static void Killsteal()
+        {
+            var useRKS = Config.Item("KillstealR").GetValue<bool>() && R.IsReady();
+            if (useRKS)
+            {
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Range)))
+                {
+                    if (R.IsReady() && hero.Distance(ObjectManager.Player) <= R.Range &&
+                        DamageLib.getDmg(hero, DamageLib.SpellType.R) >= hero.Health)
+                        R.Cast();
+                }
             }
         }
     }
