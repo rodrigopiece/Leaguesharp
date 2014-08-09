@@ -80,6 +80,7 @@ namespace Blitzcrank
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("InterruptSpells", "Interrupt spells with R").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("KillstealR", "Killsteal with R").SetValue(false));
 
             //Drawings menu:
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -138,10 +139,16 @@ namespace Blitzcrank
             if (Player.IsDead) return;
             Orbwalker.SetAttacks(true);
             Orbwalker.SetMovement(true);
+            
+            var useRKS = Config.Item("KillstealR").GetValue<bool>() && R.IsReady();
 
             if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
             {
                 Combo();
+            }
+            if (useRKS)
+            {
+                Killsteal();
             }
         }
 
@@ -154,6 +161,18 @@ namespace Blitzcrank
                 if (menuItem.Active)
                     Utility.DrawCircle(Player.Position, spell.Range, menuItem.Color);
             }
+        }
+        
+        private static void Killsteal()
+        {
+            
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Range)))
+                {
+                    if (R.IsReady() && hero.Distance(ObjectManager.Player) <= R.Range &&
+                        DamageLib.getDmg(hero, DamageLib.SpellType.R) >= hero.Health)
+                        R.Cast();
+                }
+            
         }
     }
 }
