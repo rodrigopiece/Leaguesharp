@@ -123,11 +123,14 @@ namespace Blitzcrank
             if (qTarget !=null && useQ && Q.IsReady())
             {
                 Q.Cast(qTarget);
-                if (useE && E.IsReady())
-                {
-                    E.Cast();
-                }
             }
+
+            if (qTarget !=null && useE && E.IsReady())
+            {
+                if (qTarget.HasBuff("RocketGrab"))
+                    E.Cast();
+            }
+
             if (rTarget != null && !Q.IsReady() && useR && R.IsReady())
             {
                 R.Cast(rTarget, false, true);
