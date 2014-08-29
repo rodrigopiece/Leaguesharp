@@ -1,4 +1,4 @@
-Ecko
-====
+Leaguesharp
+===========
 
-Leaguesharp Stuff. Feel free to pull requests to improve it :)
+Assemblies for L# Tool.
