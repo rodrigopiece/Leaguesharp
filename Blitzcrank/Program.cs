@@ -47,7 +47,7 @@ namespace Blitzcrank
             E = new Spell(SpellSlot.E, Player.AttackRange+50);
             R = new Spell(SpellSlot.R, 600);
 
-            Q.SetSkillshot(0.25f, 70f, 1800f, true, Prediction.SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 70f, 1800f, true, SkillshotType.SkillshotLine);
 
             SpellList.Add(Q);
             SpellList.Add(E);
@@ -114,27 +114,31 @@ namespace Blitzcrank
             Orbwalker.SetAttacks(true);
 
             var qTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
+            var eTarget = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
             var rTarget = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
 
             bool useQ = Config.Item("UseQCombo").GetValue<bool>();
             bool useE = Config.Item("UseECombo").GetValue<bool>();
             bool useR = Config.Item("UseRCombo").GetValue<bool>();
 
-            if (qTarget !=null && useQ && Q.IsReady())
+            if (qTarget !=null && useQ && Q.IsReady())  //Init of the combo. Q Grab.
             {
                 Q.Cast(qTarget);
             }
 
-            if (qTarget !=null && useE && E.IsReady())
+            if (qTarget !=null && useE && E.IsReady())  //AutoE when you pull the enemy. Q-E Combo.
             {
                 if (qTarget.HasBuff("RocketGrab"))
                     E.Cast();
             }
 
-            if (rTarget != null && !Q.IsReady() && useR && R.IsReady())
-            {
+            if (eTarget !=null && useE && E.IsReady() && !Q.IsReady()) //Cast Q if you can't use E and the target is near you.
+                                                                       //Done to be able to use E even if you didn't land the Q.
+                E.Cast();
+
+            if (rTarget != null && !Q.IsReady() && useR && R.IsReady()) //If you can't use the Q, it uses the R.
+                                                                        //Done to be able to do the Q-E-R combo.
                 R.Cast(rTarget, false, true);
-            }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
