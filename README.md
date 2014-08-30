@@ -1,10 +1,5 @@
-Leaguesharp
-=========
-
-Assemblies for L# Tool.
-
 Blitzcrank
---
+----
 
 Simple assembly of Blitzcrank. 
 
