@@ -72,6 +72,11 @@ namespace Blitzcrank
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
+
+            Config.SubMenu("Combo").AddItem(new MenuItem("spacer", "--- Additional ---"));
+            Config.SubMenu("Combo").AddItem(new MenuItem("AutoUlt", "AutoUlt").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("CountR", "N. Enemy in Range to AutoUlt").SetValue(new Slider(1, 5, 0)));
+
             Config.SubMenu("Combo")
                 .AddItem(
                     new MenuItem("ComboActive", "Combo!").SetValue(
@@ -121,24 +126,23 @@ namespace Blitzcrank
             bool useE = Config.Item("UseECombo").GetValue<bool>();
             bool useR = Config.Item("UseRCombo").GetValue<bool>();
 
-            if (qTarget !=null && useQ && Q.IsReady())  //Init of the combo. Q Grab.
-            {
-                Q.Cast(qTarget);
-            }
+            //Init of the combo. Q Grab.
+            if (qTarget !=null && useQ && Q.IsReady())  Q.Cast(qTarget);
 
-            if (qTarget !=null && useE && E.IsReady())  //AutoE when you pull the enemy. Q-E Combo.
+            //AutoE when you pull the enemy. Q-E Combo.
+            if (qTarget !=null && useE && E.IsReady())  
             {
                 if (qTarget.HasBuff("RocketGrab"))
                     E.Cast();
             }
 
-            if (eTarget !=null && useE && E.IsReady() && !Q.IsReady()) //Cast Q if you can't use E and the target is near you.
-                                                                       //Done to be able to use E even if you didn't land the Q.
-                E.Cast();
+            //Cast Q if you can't use E and the target is near you.
+            //Done to be able to use E even if you didn't land the Q.
+            if (eTarget !=null && useE && E.IsReady() && !Q.IsReady()) E.Cast();
 
-            if (rTarget != null && !Q.IsReady() && useR && R.IsReady()) //If you can't use the Q, it uses the R.
-                                                                        //Done to be able to do the Q-E-R combo.
-                R.Cast(rTarget, false, true);
+            //If you can't use the Q, it uses the R.
+            //Done to be able to do the Q-E-R combo.
+            if (rTarget != null && !Q.IsReady() && useR && R.IsReady()) R.Cast(rTarget, false, true);
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -149,14 +153,9 @@ namespace Blitzcrank
             
             var useRKS = Config.Item("KillstealR").GetValue<bool>() && R.IsReady();
 
-            if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
-            {
-                Combo();
-            }
-            if (useRKS)
-            {
-                Killsteal();
-            }
+            if (Config.Item("ComboActive").GetValue<KeyBind>().Active) Combo();
+            if (useRKS) Killsteal();
+            if (Config.Item("AutoUlt").GetValue<KeyBind>().Active && Utility.CountEnemysInRange((int)R.Range) >= Config.Item("CountR").GetValue<Slider>().Value && R.IsReady()) R.Cast(); 
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -172,14 +171,12 @@ namespace Blitzcrank
         
         private static void Killsteal()
         {
-            
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Range)))
-                {
-                    if (R.IsReady() && hero.Distance(ObjectManager.Player) <= R.Range &&
-                        DamageLib.getDmg(hero, DamageLib.SpellType.R) >= hero.Health)
-                        R.Cast();
-                }
-            
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(R.Range)))
+            {
+                if (R.IsReady() && hero.Distance(ObjectManager.Player) <= R.Range &&
+                    DamageLib.getDmg(hero, DamageLib.SpellType.R) >= hero.Health)
+                    R.Cast();
+            }
         }
     }
 }
