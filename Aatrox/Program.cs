@@ -72,9 +72,16 @@ namespace Aatrox
             Config.AddSubMenu(new Menu("Combo", "Combo"));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseItems", "Use Items").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("NoQNear", "Don't use Q near").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("EbeforeQ", "Use E before Q").SetValue(false));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
+
+            Config.SubMenu("Combo").AddItem(new MenuItem("spacer", "--- Additional ---"));
+
+            Config.SubMenu("Combo").AddItem(new MenuItem("SwitchLife", "Change to Life").SetValue(new Slider(1, 100, 40)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("SwitchPower", "Change to Power").SetValue(new Slider(1, 100, 55)));
 
             Config.SubMenu("Combo")
                 .AddItem(
@@ -90,7 +97,7 @@ namespace Aatrox
 
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
-            Config.SubMenu("Misc").AddItem(new MenuItem("InterruptSpells", "Interrupt spells with Q").SetValue(false));
+            Config.SubMenu("Misc").AddItem(new MenuItem("InterruptSpells", "Interrupt spells with Q").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealE", "Killsteal with E").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealR", "Killsteal with R").SetValue(false));
 
@@ -160,6 +167,9 @@ namespace Aatrox
             {
 
                 if (qTarget != null && useQ && Q.IsReady())
+                    if ((Config.Item("NoQNear").GetValue<bool>() && Player.Distance(qTarget) < Player.AttackRange + 50)
+                        || (Config.Item("EbeforeQ").GetValue<bool>() && E.IsReady()))
+                        return; 
                     Q.Cast(qTarget, true, true);
 
                 if (rTarget != null && useR && R.IsReady())
@@ -167,10 +177,10 @@ namespace Aatrox
 
                 if (useW && W.IsReady())
                 {
-                    if (Player.Health < (Player.MaxHealth * 0.4) && !WHealing)
+                    if (Player.Health < (Player.MaxHealth * (Config.Item("SwitchLife").GetValue<Slider>().Value) * 0.01) && !WHealing)
                         W.Cast();
                     else
-                        if (Player.Health > (Player.MaxHealth * 0.55) && WHealing)
+                        if (Player.Health > (Player.MaxHealth * (Config.Item("SwitchPower").GetValue<Slider>().Value) * 0.01) && WHealing)
                             W.Cast();
                 }
 
@@ -181,6 +191,9 @@ namespace Aatrox
             else
             {
                 if (qTarget != null && useQ && Q.IsReady())
+                    if ((Config.Item("NoQNear").GetValue<bool>() && Player.Distance(qTarget) < Player.AttackRange + 50)
+                        || (Config.Item("EbeforeQ").GetValue<bool>() && E.IsReady()))
+                        return; 
                     Q.Cast(qTarget, true, true);
 
                 if (useW && W.IsReady())
