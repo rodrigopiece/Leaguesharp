@@ -9,7 +9,7 @@ Aatrox
 AttackDrawer
 ----
 
-> It draws the attack range of your enemies. Enjoy your trades @botlane :^)
+> It draws the attack range of your enemies. Enjoy your trades at botlane :^)
 
 Blitzcrank
 ----
