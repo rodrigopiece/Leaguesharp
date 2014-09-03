@@ -28,7 +28,7 @@ namespace AttackDrawer
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
+             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy && hero.IsVisible && !hero.IsDead))
              {
                 Utility.DrawCircle(hero.Position, Orbwalking.GetRealAutoAttackRange(hero), ObjectManager.Player.Distance(hero) < Orbwalking.GetRealAutoAttackRange(hero) ? Color.Red : Color.LimeGreen, 4, 30, false);
              }
