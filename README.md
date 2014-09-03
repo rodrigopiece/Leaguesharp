@@ -14,8 +14,6 @@ AttackDrawer
 Blitzcrank
 ----
 
-Simple assembly of Blitzcrank. 
-
 > Mainly doing Q-E-R combo. If you can't use Q, it will try to use E if you are near the enemy, and R. Also has some other features, like interrumpt spells with your abilities, automatic R casting if you can hit more than a number of enemies, and automatic R killsteal.
 
 Simple Ult Leveler
