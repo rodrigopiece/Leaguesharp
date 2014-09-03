@@ -6,6 +6,11 @@ Aatrox
 
 > It's doing the Q-E-R combo if you can kill the enemy, otherwise it's doing Q-E. The W usage is changing automatically the W depending on your actual life. Also, it has some options like killsteal with R and E, interrumpt with Q, draws and so on.
 
+AttackDrawer
+----
+
+> It draws the attack range of your enemies. Enjoy your trades @botlane :^)
+
 Blitzcrank
 ----
 
