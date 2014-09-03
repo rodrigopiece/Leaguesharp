@@ -13,7 +13,6 @@ namespace AttackDrawer
 {
     internal class Program
     {
-        private static Menu _menu;
 
         private static void Main(string[] args)
         {
@@ -22,9 +21,6 @@ namespace AttackDrawer
 
         private static void Game_OnGameLoad(EventArgs args)
         {
-            _menu = new Menu("AttackDrawer", "Attack Drawer", true);
-            _menu.AddItem(new MenuItem("Draw", "Draw Enemy Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
-            _menu.AddToMainMenu();
             
             Drawing.OnDraw += Drawing_OnDraw;
             Game.PrintChat("Attack Range Loaded!");
@@ -34,8 +30,7 @@ namespace AttackDrawer
         {
              foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
              {
-                 if (_menu.Item("Draw").GetValue<Circle>().Active)
-                     Utility.DrawCircle(hero.Position, hero.AttackRange, _menu.Item("Draw").GetValue<Circle>().Color, 4, 30, false);
+                Utility.DrawCircle(hero.Position, Orbwalking.GetRealAutoAttackRange(hero), ObjectManager.Player.Distance(hero) < Orbwalking.GetRealAutoAttackRange(hero) ? Color.Red : Color.LimeGreen, 4, 30, false);
              }
         }
 
