@@ -80,8 +80,8 @@ namespace Aatrox
 
             Config.SubMenu("Combo").AddItem(new MenuItem("spacer", "--- Additional ---"));
 
-            Config.SubMenu("Combo").AddItem(new MenuItem("SwitchLife", "Change to Life").SetValue(new Slider(1, 100, 40)));
-            Config.SubMenu("Combo").AddItem(new MenuItem("SwitchPower", "Change to Power").SetValue(new Slider(1, 100, 55)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("SwitchLife", "Change to Life").SetValue(new Slider(40, 1, 100)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("SwitchPower", "Change to Power").SetValue(new Slider(55, 1, 100)));
 
             Config.SubMenu("Combo")
                 .AddItem(
