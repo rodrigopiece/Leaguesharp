@@ -74,7 +74,7 @@ namespace Blitzcrank
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
 
             Config.SubMenu("Combo").AddItem(new MenuItem("spacer", "--- Additional ---"));
-            Config.SubMenu("Combo").AddItem(new MenuItem("AutoUlt", "AutoUlt").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("AutoUlt", "Auto Ultimate").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("CountR", "N. Enemy in Range to AutoUlt").SetValue(new Slider(1, 5, 0)));
 
             Config.SubMenu("Combo")
@@ -86,6 +86,12 @@ namespace Blitzcrank
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("InterruptSpells", "Interrupt spells with R").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealR", "Killsteal with R").SetValue(false));
+            Config.SubMenu("Misc").AddItem(new MenuItem("APToggle", "Auto Pull on stun").SetValue(true));
+            Config.SubMenu("Misc").AddSubMenu(new Menu("Autopull", "AutoPull"));
+            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.Team != Player.Team))
+                Config.SubMenu("Misc")
+                    .SubMenu("AutoPull")
+                    .AddItem(new MenuItem("AutoPull" + enemy.BaseSkinName, enemy.BaseSkinName).SetValue(false));
 
             //Drawings menu:
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -147,15 +153,29 @@ namespace Blitzcrank
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+
             if (Player.IsDead) return;
             Orbwalker.SetAttacks(true);
             Orbwalker.SetMovement(true);
-            
+
             var useRKS = Config.Item("KillstealR").GetValue<bool>() && R.IsReady();
 
-            if (Config.Item("ComboActive").GetValue<KeyBind>().Active) Combo();
-            if (useRKS) Killsteal();
-            if (Config.Item("AutoUlt").GetValue<KeyBind>().Active && Utility.CountEnemysInRange((int)R.Range) >= Config.Item("CountR").GetValue<Slider>().Value && R.IsReady()) R.Cast(); 
+            if (Config.Item("ComboActive").GetValue<KeyBind>().Active) 
+                Combo();
+            if (useRKS) 
+                Killsteal();
+            if (Config.Item("AutoUlt").GetValue<bool>() && Utility.CountEnemysInRange((int)R.Range) >= Config.Item("CountR").GetValue<Slider>().Value && R.IsReady()) 
+                R.Cast();
+            if (Config.Item("APToggle").GetValue<bool>())
+            {
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.Team != Player.Team))
+                {
+                    if (Config.Item("AutoPull" + enemy.BaseSkinName).GetValue<bool>() && Q.IsReady())
+                        //foreach (var buff in enemy.Buffs.Where(buff => (buff.Type == (BuffType.Stun) || buff.Type == BuffType.Knockup || buff.Type == BuffType.Snare || buff.Type == BuffType.Suppression)))
+                        //    if (buff.EndTime == 0.3 + Q.Delay + (Player.Distance(enemy)/Q.Speed))
+                        Q.CastIfHitchanceEquals(enemy, HitChance.Immobile, false);
+                }
+            }
         }
 
         private static void Drawing_OnDraw(EventArgs args)
